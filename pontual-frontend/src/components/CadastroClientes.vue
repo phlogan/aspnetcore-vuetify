@@ -1,8 +1,11 @@
 <template>
-    <v-form v-model="valid">
-        <v-container>
+    <v-container>
+        <v-form @submit.prevent="cadastraCliente" v-model="valido" ref="form">
+            <v-alert :value="exibeAlerta" v-bind:type="tipoAlerta" transition="fade-transition" dismissible>
+                {{mensagemAlerta}}
+            </v-alert>            
             <v-row>
-                <!-- Campos -->
+            <!-- Campos -->
                 <v-col cols="12" md="4">
                     <v-text-field v-model="cliente.nomeFantasia" :rules="regrasNomeFantasia" :counter="250" label="Nome Fantasia" required>
                     </v-text-field>
@@ -26,24 +29,28 @@
                 </v-col>
                 <!--/ Campos -->
             </v-row>
-            <div class="float-right">
-                <v-btn class="mr-4 float-right" v-on:click="submit">
+            <div class="">
+                <v-btn class="mr-4" type="submit" :disabled="!valido">
                     Cadastrar
                 </v-btn>
             </div>
-        </v-container>
-    </v-form>
+        </v-form>
+    </v-container>
+
 </template>
 
 
 <script>
-    import { cnpj } from 'cpf-cnpj-validator'; 
+    import { cnpj } from 'cpf-cnpj-validator';
+    import clientesService from '../services/clientes';
     export default {
         data(){
             return{
-                valid: false,
+                valido: false,
+                tipoAlerta: 'success',
+                mensagemAlerta: '',
+                exibeAlerta: false,
                 cliente: {
-                    id: '',
                     nomeFantasia: '',
                     razaoSocial: '',
                     cnpj: '',
@@ -52,35 +59,46 @@
                 },
                 regrasNomeFantasia: [
                     v => !!v || 'Nome Fantasia é obrigatório',
-                    v => v.length <= 250 || 'Nome Fantasia deve ter no máximo 250 caracteres',
+                    v => v != null && v.length <= 250 || 'Nome Fantasia deve ter no máximo 250 caracteres',
                 ],
                 regrasRazaoSocial: [
                     v => !!v || 'Razão Social é obrigatório',
-                    v => v.length <= 250 || 'Razão Social deve ter no máximo 250 caracteres',
+                    v => v != null && v.length <= 250 || 'Razão Social deve ter no máximo 250 caracteres',
                 ],
                 regrasCnpj: [
                     v => !!v || 'CNPJ é obrigatório',
                     v => cnpj.isValid(v) || 'O CNPJ está inválido',
-                    v => v.length <= 20 || 'CNPJ deve ter no máximo 20 caracteres',
+                    v => v != null && v.length <= 20 || 'CNPJ deve ter no máximo 20 caracteres',
                 ],
                 regrasEmail: [
                     v => !!v || 'E-mail é obrigatório',
                     v => /.+@.+/.test(v) || 'O E-mail está inválido',
-                    v => v.length <= 150 || 'E-mail deve ter no máximo 150 caracteres',
+                    v => v != null && v.length <= 150 || 'E-mail deve ter no máximo 150 caracteres',
                 ],
                 regrasTelefone: [
                     v => !!v || 'Telefone é obrigatório',
-                    v => v.length <= 30 || 'Telefone deve ter no máximo 30 caracteres',
+                    v => v != null && v.length <= 30 || 'Telefone deve ter no máximo 30 caracteres',
                 ],
-            } 
+            }
         },
         methods: {
-            submit(){
-                this.$emit('add-cliente', this.cliente);
-                this.cliente  = {};
+            cadastraCliente(){
+                this.cliente.dataCadastro = new Date().toISOString();
+                clientesService.cadastrar(this.cliente).then(resposta => {
+                    this.montaAlerta('success', 'Cliente cadastrado com sucesso.');
+                    resposta;
+                    this.$emit('cadastra-cliente', this.cliente);
+                    this.$refs.form.resetValidation();
+                    this.$refs.form.reset();
+                }).catch(e => {
+                    this.montaAlerta('error', `Erro ao tentar cadastrar cliente. Resposta do servidor: "${e.response.data}"`);
+                });
             },
-            formatarCnpj(){
-                this.cliente.cnpj = cnpj.format(this.cliente.cnpj);
+            montaAlerta(tipo, mensagem){
+                this.mensagemAlerta = mensagem;
+                this.tipoAlerta = tipo;
+                this.exibeAlerta = true;
+                setTimeout(() => this.exibeAlerta = false, 5000);
             }
         }
     }

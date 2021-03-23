@@ -16,7 +16,7 @@
                     </v-text-field>
                 </v-col>
                 <v-col cols="12" md="4">
-                    <v-text-field v-model="cliente.cnpj" :rules="regrasCnpj" :counter="20" label="CNPJ" required v-mask="'##.###.###/####-##'">
+                    <v-text-field v-model="cliente.cnpj" :rules="regrasCnpj" :counter="18" label="CNPJ" required v-mask="'##.###.###/####-##'">
                     </v-text-field>
                 </v-col>
                 <v-col cols="12" md="4">
@@ -29,11 +29,11 @@
                 </v-col>
                 <!--/ Campos -->
             </v-row>
-            <div class="">
-                <v-btn class="mr-4" type="submit" :disabled="!valido">
+            <v-row align="center" justify="center">
+                <v-btn class="mr-4 primary float-right" x-large type="submit">
                     Cadastrar
                 </v-btn>
-            </div>
+            </v-row>
         </v-form>
     </v-container>
 
@@ -91,14 +91,17 @@
                     this.$refs.form.resetValidation();
                     this.$refs.form.reset();
                 }).catch(e => {
-                    this.montaAlerta('error', `Erro ao tentar cadastrar cliente. Resposta do servidor: "${e.response.data}"`);
+                    if(e.response !== undefined)
+                        this.montaAlerta('error', `Erro ao tentar cadastrar cliente. Resposta do servidor: "${e.response.data}"`);
+                    else
+                        this.montaAlerta('error', `Erro ao tentar cadastrar cliente. Não foi possível se conectar ao servidor.`);
                 });
             },
             montaAlerta(tipo, mensagem){
                 this.mensagemAlerta = mensagem;
                 this.tipoAlerta = tipo;
                 this.exibeAlerta = true;
-                setTimeout(() => this.exibeAlerta = false, 5000);
+                setTimeout(() => this.exibeAlerta = false, 10000);
             }
         }
     }

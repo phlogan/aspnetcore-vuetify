@@ -2,8 +2,11 @@
     <v-container>
       <h1 class="text-center font-weight-light">CADASTRO DE CLIENTE</h1>
       <CadastroClientes v-on:cadastra-cliente="redirListagem"/>
-      
-        <v-checkbox v-model="chkManterNaPagina" label="Manter na página" class="float-right"></v-checkbox>
+      <br>
+        <v-row align="center" justify="center" style="margin-left: -31px">
+          <v-checkbox v-model="chkManterNaPagina" label="Continuar cadastrando"></v-checkbox>
+        </v-row>
+        
     </v-container>
 
 </template>

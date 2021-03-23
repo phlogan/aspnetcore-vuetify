@@ -42,7 +42,7 @@
                         </v-text-field>
                     </v-col>
                     <v-col cols="12" md="4">
-                        <v-text-field v-model="clienteEditando.cnpj" :rules="regrasCnpj" :counter="20" label="CNPJ" required v-mask="'##.###.###/####-##'">
+                        <v-text-field v-model="clienteEditando.cnpj" :rules="regrasCnpj" :counter="18" label="CNPJ" required v-mask="'##.###.###/####-##'">
                         </v-text-field>
                     </v-col>
                     <v-col cols="12" md="4">
@@ -162,7 +162,7 @@
         },
         methods:{
             abreDialogEdicaoCliente(cliente){
-                this.clienteEditando = cliente;
+                this.clienteEditando = Object.assign({}, cliente);
                 this.dialogEdicao = true;
             },
             abreDialogRemocaoCliente(cliente){
@@ -170,7 +170,7 @@
                 this.dialogRemocao = true;
             },
             alteraCliente(){
-              this.clienteEditando.dataCadastro = new Date(this.clienteEditando.dataCadastro).toISOString();
+              this.clienteEditando.dataCadastro = new Date().toISOString();
               clientesService.alterar(this.clienteEditando).then(resposta => {
                 resposta;
                 this.clienteEditando = {};
@@ -183,7 +183,7 @@
               });
             },
             removeCliente(){
-              this.clienteRemovendo.dataCadastro = new Date(this.clienteRemovendo.dataCadastro).toISOString();
+              this.clienteRemovendo.dataCadastro = new Date().toISOString();
               clientesService.excluir(this.clienteRemovendo).then(resposta => {
                 resposta;
                 this.clienteRemovendo = {};
@@ -203,12 +203,6 @@
                     this.mensagemErroListagem = `${e.response.data}`;
                 });
             },
-            formataDatas(){
-            return this.clientes.forEach(function(item){
-              
-              console.log(item);
-            });
-          },
           montaAlertaEdicao(tipo, mensagem){
               this.mensagemAlertaEdicao = mensagem;
               this.tipoAlertaEdicao = tipo;
@@ -218,11 +212,6 @@
         },
         mounted(){
           this.carregaClientes();
-        },
-        computed: {
-          
-        },
-        components: {
         }
     }
 </script>

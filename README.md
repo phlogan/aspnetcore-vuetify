@@ -15,5 +15,3 @@ Uma SPA simples de gerenciamento e apresentação de dados utilizando Vuetify (v
 * [SQL Server 18](https://docs.microsoft.com/pt-br/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver15)
 
 
-## Autores
-- Phelip Logan
